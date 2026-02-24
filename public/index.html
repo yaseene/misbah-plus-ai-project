@@ -181,7 +181,7 @@
           return;
         }
         try {
-          const res = await fetch('/suggest-field', {
+          const res = await fetch('/.netlify/functions/suggest-field-', 
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({ moduleName, desiredOutcome, fieldId, language: 'ar' })

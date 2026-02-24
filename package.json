@@ -1,0 +1,15 @@
+{
+  "name": "misbah-plus-ai-project",
+  "version": "1.0.0",
+  "description": "Misbah+ AI context engineering form with suggestion integration via Google Gemini API",
+  "main": "server.js",
+  "scripts": {
+    "start": "node server.js"
+  },
+  "dependencies": {
+    "express": "^4.19.0",
+    "node-fetch": "^3.3.2"
+  },
+  "author": "",
+  "license": "ISC"
+}

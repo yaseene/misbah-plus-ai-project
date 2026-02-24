@@ -1,0 +1,217 @@
+<!doctype html>
+<html lang="ar" dir="rtl">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width,initial-scale=1" />
+    <title>Misbah+ – مولّد سياق مع اقتراحات</title>
+    <style>
+      :root{font-family:system-ui,-apple-system,Segoe UI,Roboto,Arial; color:#111}
+      body{margin:0;background:#f6f7fb}
+      header{padding:16px 18px;background:#fff;border-bottom:1px solid #e6e7ee;position:sticky;top:0;z-index:10}
+      header h1{margin:0;font-size:18px}
+      header p{margin:6px 0 0;color:#555;font-size:13px}
+      .wrap{display:grid;grid-template-columns:1fr 1fr;gap:14px;padding:14px;max-width:1280px;margin:0 auto}
+      @media (max-width: 980px){.wrap{grid-template-columns:1fr}}
+      .card{background:#fff;border:1px solid #e6e7ee;border-radius:14px;box-shadow:0 2px 10px rgba(0,0,0,.04)}
+      .card h2{margin:0;padding:14px 14px 0;font-size:15px}
+      .card .content{padding:14px}
+      .grid{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+      @media (max-width: 640px){.grid{grid-template-columns:1fr}}
+      label{display:block;font-size:12px;color:#444;margin-bottom:6px}
+      input,textarea,select{
+        width:100%;box-sizing:border-box;border:1px solid #d9dbe7;border-radius:10px;
+        padding:10px 10px;background:#fff;font-size:13px;outline:none
+      }
+      textarea{min-height:84px;resize:vertical}
+      .row{display:flex;gap:8px;flex-wrap:wrap}
+      button{
+        border:1px solid #d9dbe7;background:#fff;border-radius:12px;padding:8px 12px;
+        cursor:pointer;font-size:12px
+      }
+      button.primary{background:#111;color:#fff;border-color:#111}
+      button.suggest{background:#e6f0ff;color:#0a58ca;border-color:#9ac7ff;padding:5px 8px;font-size:11px;margin-top:4px}
+      button:active{transform:translateY(1px)}
+      .hint{font-size:11px;color:#666;margin-top:6px}
+      .output{
+        width:100%;min-height:360px;white-space:pre-wrap;direction:ltr;text-align:left;
+        border:1px dashed #d9dbe7;border-radius:12px;padding:12px;background:#fbfbff;font-size:12px;line-height:1.45
+      }
+      .suggestions-box{margin-top:4px;font-size:11px;border:1px dashed #d9dbe7;border-radius:8px;padding:6px;background:#fafcff;color:#333}
+      .suggestions-box div{cursor:pointer;padding:3px 0;border-bottom:1px dotted #eee}
+      .suggestions-box div:last-child{border-bottom:none}
+      .suggestions-box div:hover{background:#eef3ff}
+      .pill{display:inline-block;background:#f0f2ff;border:1px solid #dfe2ff;color:#2a2f7a;
+        padding:4px 6px;border-radius:999px;font-size:10px;margin-left:6px}
+    </style>
+  </head>
+  <body>
+    <header>
+      <h1>Misbah+ — مولّد قالب هندسة السياق مع اقتراحات AI</h1>
+      <p>املأ الحقول الرئيسية أولاً ثم استخدم زر <strong>اقتراح</strong> للحصول على قيم مناسبة لكل خانة من Google Gemini.</p>
+    </header>
+    <div class="wrap">
+      <!-- Form Section -->
+      <section class="card">
+        <h2>البيانات الأساسية</h2>
+        <div class="content">
+          <div class="grid">
+            <div>
+              <label>الموديول</label>
+              <input id="moduleName" placeholder="مثال: خطة محتوى سوشيال" />
+            </div>
+            <div>
+              <label>النتيجة المطلوبة</label>
+              <input id="desiredOutcome" placeholder="مثال: جدول 14 يوم + 10 أفكار" />
+            </div>
+            <div>
+              <label>الهدف الأعلى</label>
+              <input id="northStar" placeholder="مثال: زيادة رسائل DM" />
+            </div>
+            <div>
+              <label>KPIs (3 مؤشرات)</label>
+              <input id="kpis" placeholder="مثال: رسائل، حفظ، زيارات" />
+            </div>
+          </div>
+          <h2 style="padding:8px 0 0;font-size:14px">الحقول بتوجيه AI</h2>
+          <div class="grid">
+            <div>
+              <label>المبدأ الحاكم (Non-Negotiable)
+                <button class="suggest" data-field="principle">اقتراح</button>
+              </label>
+              <input id="principle" placeholder="مثل: شد الانتباه ثم تحويل" />
+              <div class="suggestions-box" id="principle-suggestions"></div>
+            </div>
+            <div>
+              <label>الممنوعات (No-Goals)
+                <button class="suggest" data-field="nogos">اقتراح</button>
+              </label>
+              <input id="nogos" placeholder="مثل: المبالغة، الحشو، المصطلحات غير المفهومة" />
+              <div class="suggestions-box" id="nogos-suggestions"></div>
+            </div>
+            <div>
+              <label>الدور التشغيلي
+                <button class="suggest" data-field="role">اقتراح</button>
+              </label>
+              <input id="role" placeholder="مثل: استراتيجي محتوى قصير" />
+              <div class="suggestions-box" id="role-suggestions"></div>
+            </div>
+            <div>
+              <label>هيكل الإخراج
+                <button class="suggest" data-field="structure">اقتراح</button>
+              </label>
+              <input id="structure" placeholder="مثل: Hook→Value→Proof→CTA" />
+              <div class="suggestions-box" id="structure-suggestions"></div>
+            </div>
+            <div>
+              <label>صيغة التسليم
+                <button class="suggest" data-field="deliveryFormat">اقتراح</button>
+              </label>
+              <textarea id="deliveryFormat" placeholder="مثال:\n- عنوان\n- الهدف\n- 3 Hooks\n- النص المنطوق\n- CTA"></textarea>
+              <div class="suggestions-box" id="deliveryFormat-suggestions"></div>
+            </div>
+          </div>
+          <div class="row" style="margin-top:12px">
+            <button class="primary" id="btnRender">توليد قالب Misbah+</button>
+          </div>
+        </div>
+      </section>
+      <!-- Output Section -->
+      <section class="card">
+        <h2>قالب System Prompt الناتج</h2>
+        <div class="content">
+          <div id="output" class="output"></div>
+          <p class="hint">استخدم هذا النص مع سطر التفعيل لتوليد النتيجة النهائية من النموذج.</p>
+          <label>سطر التفعيل السريع</label>
+          <div id="activation" class="output" style="min-height: auto"></div>
+        </div>
+      </section>
+    </div>
+    <script>
+      const $ = (id) => document.getElementById(id);
+      /**
+       * Generate the Misbah+ prompt using current form values. This is
+       * similar to the static generator in the earlier example. It
+       * constructs a formatted template based on the filled inputs.
+       */
+      function buildPrompt() {
+        const d = {
+          moduleName: $('moduleName').value.trim(),
+          desiredOutcome: $('desiredOutcome').value.trim(),
+          northStar: $('northStar').value.trim(),
+          kpis: $('kpis').value.trim(),
+          principle: $('principle').value.trim(),
+          nogos: $('nogos').value.trim(),
+          role: $('role').value.trim(),
+          structure: $('structure').value.trim(),
+          deliveryFormat: $('deliveryFormat').value.trim()
+        };
+        return `إطار عمل مِصْبَاح+\n\n` +
+          `0) بطاقة المهمة\n` +
+          `- الموديول: ${d.moduleName || '-'}\n` +
+          `- النتيجة المطلوبة: ${d.desiredOutcome || '-'}\n` +
+          `- الهدف الأعلى: ${d.northStar || '-'}\n` +
+          `- KPIs: ${d.kpis || '-'}\n\n` +
+          `1) المبدأ (The Principle)\n` +
+          `- الدستور الحاكم: ${d.principle || '-'}\n` +
+          `- الممنوعات: ${d.nogos || '-'}\n\n` +
+          `2) الصياغة (The Formulation)\n` +
+          `- الدور التشغيلي: ${d.role || '-'}\n\n` +
+          `3) البروتوكول (The Protocol)\n` +
+          `- هيكل الإخراج: ${d.structure || '-'}\n\n` +
+          `4) الحصيلة (The Outcome)\n` +
+          `صيغة التسليم:\n${d.deliveryFormat || '-'}`;
+      }
+      /**
+       * Build the activation line that instructs ChatGPT to apply Misbah+.
+       */
+      function buildActivation() {
+        return `طبّق مِصْبَاح+ على الموديول أعلاه، لا تُظهر خطوات التفكير، وسلّم الناتج بصيغة الحصيلة.`;
+      }
+      // Render output when user clicks generate
+      document.getElementById('btnRender').addEventListener('click', () => {
+        $('output').textContent = buildPrompt();
+        $('activation').textContent = buildActivation();
+      });
+      // Suggestion handler
+      async function handleSuggest(fieldId) {
+        const moduleName = $('moduleName').value.trim();
+        const desiredOutcome = $('desiredOutcome').value.trim();
+        if (!moduleName || !desiredOutcome) {
+          alert('يرجى ملء الموديول والنتيجة المطلوبة أولاً');
+          return;
+        }
+        try {
+          const res = await fetch('/suggest-field', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ moduleName, desiredOutcome, fieldId, language: 'ar' })
+          });
+          const data = await res.json();
+          const box = document.getElementById(fieldId + '-suggestions');
+          box.innerHTML = '';
+          (data.suggestions || []).forEach(s => {
+            const div = document.createElement('div');
+            div.textContent = s;
+            div.addEventListener('click', () => {
+              const input = $(fieldId);
+              input.value = s;
+              box.innerHTML = '';
+              // Optionally regenerate prompt immediately
+              $('output').textContent = buildPrompt();
+            });
+            box.appendChild(div);
+          });
+        } catch (err) {
+          console.error('Error fetching suggestions', err);
+        }
+      }
+      // Attach event listeners to all suggest buttons
+      document.querySelectorAll('button.suggest').forEach(btn => {
+        btn.addEventListener('click', () => {
+          const fieldId = btn.dataset.field;
+          handleSuggest(fieldId);
+        });
+      });
+    </script>
+  </body>
+</html>
